@@ -8,17 +8,14 @@ export async function GET() {
     const sql = getDb();
 
     const rows = await sql`
-      SELECT
-        current_database() AS database,
-        current_schema() AS schema,
-        inet_server_addr()::text AS server_ip
+      SELECT platform, status, auth_type, connected_at
+      FROM platform_credentials
+      ORDER BY platform
     `;
 
     return NextResponse.json({
       ok: true,
-      database: rows[0]?.database ?? null,
-      schema: rows[0]?.schema ?? null,
-      server_ip: rows[0]?.server_ip ?? null,
+      rows,
     });
   } catch (error) {
     return NextResponse.json(
