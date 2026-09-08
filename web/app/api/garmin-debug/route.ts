@@ -7,19 +7,19 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const distPath = path.join(
+    const filePath = path.join(
       process.cwd(),
       "node_modules",
       "garmin-auth",
-      "dist"
+      "dist",
+      "storage.js"
     );
 
-    const files = fs.readdirSync(distPath);
+    const source = fs.readFileSync(filePath, "utf8");
 
     return NextResponse.json({
       ok: true,
-      distPath,
-      files,
+      source,
     });
   } catch (error) {
     return NextResponse.json(
