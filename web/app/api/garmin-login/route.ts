@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { DBTokenStore } from "garmin-auth";
+import { getDb } from "@/lib/db";
 import { GARMIN_TOKEN_PLATFORM, resetGarminClient } from "@/lib/garmin-upload";
 import { workerLogin, tokensFromResult, type WorkerLoginResult } from "@/lib/garmin-login-worker";
 
@@ -27,7 +28,18 @@ async function persist(url: string, result: WorkerLoginResult): Promise<void> {
   if (!tokens) throw new Error("Login succeeded but no DI tokens were returned.");
   const store = new DBTokenStore(url, GARMIN_TOKEN_PLATFORM);
   await store.save(tokens);
-  resetGarminClient();
+
+  const sql = getDb();
+
+  const verify = await sql`
+  SELECT platform, status, auth_type, connected_at
+  FROM platform_credentials
+  WHERE platform = ${GARMIN_TOKEN_PLATFORM}
+`;
+
+console.log("GARMIN SAVE VERIFY:", verify);
+
+resetGarminClient();
 }
 
 /** Map a Worker result to the HTTP response the client consumes. */
