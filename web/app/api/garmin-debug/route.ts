@@ -7,8 +7,10 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const packagePath = path.dirname(
-      require.resolve("garmin-auth")
+    const packagePath = path.join(
+      process.cwd(),
+      "node_modules",
+      "garmin-auth"
     );
 
     const files = fs.readdirSync(packagePath);
